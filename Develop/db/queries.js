@@ -26,4 +26,38 @@ async function viewAllEmployees() {
   return result.rows;
 }
 
-module.exports = { viewAllDepartments, viewAllRoles, viewAllEmployees };
+async function addDepartment(name) {
+  await pool.query('INSERT INTO department (name) VALUES ($1);', [name]);
+  console.log(`Added department: ${name}`);
+}
+
+async function addRole(title, salary, departmentId) {
+  await pool.query(
+    'INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3);',
+    [title, salary, departmentId]
+  );
+  console.log(`Added role: ${title}`);
+}
+
+async function addEmployee(firstName, lastName, roleId, managerId) {
+  await pool.query(
+    'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4);',
+    [firstName, lastName, roleId, managerId]
+  );
+  console.log(`Added employee: ${firstName} ${lastName}`);
+}
+
+async function updateEmployeeRole(employeeId, newRoleId) {
+  await pool.query('UPDATE employee SET role_id = $1 WHERE id = $2;', [newRoleId, employeeId]);
+  console.log(`Updated employee ${employeeId} to role ${newRoleId}`);
+}
+
+module.exports = {
+  viewAllDepartments,
+  viewAllRoles,
+  viewAllEmployees,
+  addDepartment,
+  addRole,
+  addEmployee,
+  updateEmployeeRole
+};

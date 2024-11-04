@@ -1,5 +1,5 @@
-const { mainMenu } = require('./lib/prompts');
-const { viewAllDepartments, viewAllRoles, viewAllEmployees } = require('./db/queries');
+const { mainMenu, addDepartmentPrompt, addRolePrompt, addEmployeePrompt, updateEmployeeRolePrompt } = require('./lib/prompts');
+const { viewAllDepartments, viewAllRoles, viewAllEmployees, addDepartment, addRole, addEmployee, updateEmployeeRole } = require('./db/queries');
 
 async function init() {
   let shouldContinue = true;
@@ -11,11 +11,26 @@ async function init() {
       case 'View all departments':
         console.table(await viewAllDepartments());
         break;
-      case 'View all roles':
-        console.table(await viewAllRoles());
+      case 'Add a department':
+        const { departmentName } = await addDepartmentPrompt();
+        await addDepartment(departmentName);
         break;
-      case 'View all employees':
-        console.table(await viewAllEmployees());
+      case 'Add a role':
+        const departments = await viewAllDepartments();
+        const { roleName, salary, departmentId } = await addRolePrompt(departments);
+        await addRole(roleName, salary, departmentId);
+        break;
+      case 'Add an employee':
+        const roles = await viewAllRoles();
+        const employees = await viewAllEmployees();
+        const { firstName, lastName, roleId, managerId } = await addEmployeePrompt(roles, employees);
+        await addEmployee(firstName, lastName, roleId, managerId);
+        break;
+      case 'Update an employee role':
+        const employeesList = await viewAllEmployees();
+        const rolesList = await viewAllRoles();
+        const { employeeId, newRoleId } = await updateEmployeeRolePrompt(employeesList, rolesList);
+        await updateEmployeeRole(employeeId, newRoleId);
         break;
       case 'Exit':
         shouldContinue = false;
